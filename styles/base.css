@@ -1,0 +1,21 @@
+/* Colors from the figma design */
+:root{
+    /* Bases colors */
+    --red:#D34D4D;
+    --orange:#DFAD63;
+    --white:#ffffff;
+    --black:#000000;
+
+    /* Chat Section colors */
+    --primary-text:#D9D9D9;
+    --secondary-text:#757575;
+    --primary-background:var(--white);
+    --primary-outline:#C2C2C2;
+    --timestamp-text:#B4B4B4;
+    --chat-text: var(--black);
+
+    /* Sidebar colors */
+    --secondary-background:#2E2E2E;
+    --secondary-button-press:#3F3F3F;
+    --secondary-dropdown-background:#525252;
+}
