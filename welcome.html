@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome</title>
+    <style>
+        :root {
+            --orange: #DFAD63;
+            --white: #ffffff;
+            --black: #000000;
+            --dark-bg: #2E2E2E;
+            --darker-bg: #1E1E1E;
+            --text: #D9D9D9;
+            --outline: #525252;
+            --button-hover: #3F3F3F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--darker-bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-container {
+            background: var(--dark-bg);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--button-hover);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 32px;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--darker-bg);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--orange);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .button:hover {
+            background: #cc9a56;
+            transform: translateY(-1px);
+        }
+
+        .button.secondary {
+            background: transparent;
+            border: 1px solid var(--outline);
+            color: var(--text);
+        }
+
+        .button.secondary:hover {
+            background: var(--button-hover);
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--outline);
+        }
+
+        .divider span {
+            background: var(--dark-bg);
+            padding: 0 16px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="welcome-container">
+        
+        <h1>Welcome Screen</h1>
+        
+        <div class="input-group">
+            <input type="text" id="roomCode" placeholder="Enter a room code" />
+        </div>
+        
+        <a href="joinRoom.html"><button class="button">Join</button></a>
+        
+        <div class="divider">&nbsp</div>
+        
+        <a href="createRoom.html"><button class="button secondary">Create a room</button></a>
+    </div>
+
+</body>
+
+</html>
