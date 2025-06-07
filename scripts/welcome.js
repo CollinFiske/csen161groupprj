@@ -28,6 +28,7 @@ document.getElementById('joinBtn').addEventListener('click', async () => {
 		if (data.exists) {
 			// Redirect with roomId as a URL param going into joinRoom.html
 			window.location.href = `joinRoom.html?roomId=${encodeURIComponent(data.roomId)}`;
+			console.log("helllo");
 		} else {
 			alert("Invalid room code. Please check and try again.");
 		}
