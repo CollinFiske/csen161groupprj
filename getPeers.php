@@ -1,6 +1,8 @@
 <?php
 
-// This particular script is responsible for returning a list of peer ids for all the users in a specific room
+// This particular script is responsible for returning an array of peer ids in json format for all the users in a specific room.
+
+// In short, make sure something like this gets sent back to javascript: ["user123", "user456", "user789"] etc.
 
 header('Content-Type: application/json');
 
