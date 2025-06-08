@@ -20,7 +20,9 @@ document.getElementById('joinBtn').addEventListener('click', async () => {
 			body: JSON.stringify({ roomCode })
 		});
 
-		if (!response.ok) throw new Error("Server error");
+		if (!response.ok) {
+			throw new Error("Server error");
+		}
 
         // We wait here for the data back from checkRoom.php
 		const data = await response.json();

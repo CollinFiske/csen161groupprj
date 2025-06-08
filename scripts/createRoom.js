@@ -46,6 +46,7 @@ document.getElementById('createBtn').addEventListener('click', async () => {
 		} else {
 			alert("Failed to create room.");
 		}
+		
 	} catch (err) {
 		console.error(err);
 		alert("Server error occurred.");
