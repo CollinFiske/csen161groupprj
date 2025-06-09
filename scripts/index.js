@@ -11,6 +11,7 @@ import { getUserId } from './utils.js'
 const PEER_ID_SALT = 'a34w0pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
 let currentRoomId = null;
 let currentUserId = null;
+let currentUserName = null;
 let peerConnections =  {}; // empty object for now of all peer connections at the moment. Gonna consist of key: peerId as well as value: DataConnection
 let currentRoomMembers = [] // { id, name } all of the members in a room
 
@@ -86,15 +87,19 @@ async function getRooms() {
 					</svg>
 				</summary>
 				<div class="context-menu">
-					<div class="item">item 1</div>
-					<div class="item">item 2</div>
-					<div class="item danger">item 1</div>
+					<div class="item danger">
+                        <a href="/leaveRoom.php?roomId=${room.id}">Leave</a>
+                    </div>
 				</div>
 			</details>
 			<div class="subtitle subtext">${room.description}</div>
 		`
 		container.appendChild(el)
 	}
+}
+
+async function leaveRoom(roomId) {
+    window.location.href = `/leaveRoom.php?id=${roomId}`
 }
 
 // Next we focus on sending a message for when it is written
@@ -107,6 +112,7 @@ async function sendMessage () {
 
 	const messageData = {
 		authorId: currentUserId,
+        author: currentUserName,
 		timestamp: Date.now(),
 		content,
 		roomId: currentRoomId,
@@ -134,7 +140,7 @@ async function sendMessage () {
 	document
 		.getElementById("chat-container")
 		.appendChild(
-			createMessageElement(messageData.authorId, messageData.content, [])
+			createMessageElement(messageData.author, messageData.content, [])
 		);
 
 	// Sets the message input box back to nothing again starting up a new input
@@ -154,7 +160,8 @@ async function joinRoom(roomId) {
 	// For all existing messages already, we need to fetch them! This can be done by getting them from the database via results from getPeers.php
 	const res = await fetch(`/getRoomData.php?roomId=${roomId}`).then(r => r.json());
 
-        currentRoomMembers = res.members
+    currentRoomMembers = res.members
+    currentUserName = res.members.find(m => m.id == currentUserId).name
 
 	document.getElementById('room-name').innerText = `${res.room.name} (${res.room.id})`
 
@@ -173,14 +180,16 @@ async function joinRoom(roomId) {
 	const chatContainer = document.getElementById('chat-container');
 	chatContainer.innerHTML = ''
 	for (const message of res.messages) {
-		chatContainer.appendChild(createMessageElement(message.author, message.body, []))
+		chatContainer.appendChild(createMessageElement(message.author, message.body, message.timestamp, []))
 	}
 
         updateRoomStats()
 }
 
-function createMessageElement(author, body, files) {
+function createMessageElement(author, body, timestamp, files) {
 	const el = document.createElement('div')
+    el.classList.add('message')
+    const time = new Date(timestamp).toString()
 	el.innerHTML = `
 		<details class="pmenu above">
 			<div class="author-details">
@@ -193,6 +202,7 @@ function createMessageElement(author, body, files) {
 			</summary>
 		</details>
 		<div class="body"> ${body} </div>
+		<div class="timestamp"> ${time} </div>
 		<div class="files"></div>
 	`
 	return el
@@ -222,7 +232,7 @@ function setupConnection(conn) {
 			document
 				.getElementById("chat-container")
 				.appendChild(
-					createMessageElement(msg.data.authorId, msg.data.content, [])
+					createMessageElement(msg.data.author, msg.data.content, msg.data.timestamp, [])
 				);
 		}
 	});

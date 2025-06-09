@@ -26,7 +26,8 @@ $pdo->exec("
 		id INTEGER PRIMARY KEY,
 		body VARCHAR(2048) NOT NULL,
 		room INTEGER NOT NULL,
-		author INTEGER NOT NULL
+        author INTEGER NOT NULL,
+        timestamp INTEGER NOT NULL
 	);
 
 	CREATE TABLE IF NOT EXISTS Memberships(
@@ -56,15 +57,16 @@ function createRoom($name, $description) {
 
 // Saves the message in the database. No checks are made for if this is a
 // duplicate.
-function saveMessage($roomId, $authorId, $body) {
+function saveMessage($roomId, $authorId, $timestamp, $body) {
 	global $pdo;
 	$insert = $pdo->prepare("
-		INSERT INTO Messages(room, author, body) VALUES
-			(:roomId, :authorId, :body)
+		INSERT INTO Messages(room, author, timestamp, body) VALUES
+			(:roomId, :authorId, :timestamp, :body)
 			RETURNING id;
 	");
 	$insert->bindParam(':roomId', $roomId, PDO::PARAM_INT);
 	$insert->bindParam(':authorId', $authorId, PDO::PARAM_INT);
+	$insert->bindParam(':timestamp', $timestamp, PDO::PARAM_INT);
 	$insert->bindParam(':body', $body, PDO::PARAM_STR);
 	if (!$insert->execute()) {
 		die("Could not insert message");
@@ -83,8 +85,22 @@ function joinRoom($userId, $roomId, $admin) {
 	$insert->bindParam(':roomId', $roomId, PDO::PARAM_INT);
 	$insert->bindParam(':admin', $admin, PDO::PARAM_BOOL);
 	if (!$insert->execute()) {
-		die("Could not join room");
+		die("Could not join room $roomId");
 	}
+}
+
+function leaveRoom($userId, $roomId) {
+    global $pdo;
+    $delete = $pdo->prepare("
+        DELETE FROM Memberships
+            WHERE user IS :userId
+            AND room IS :roomId;
+    ");
+    $delete->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $delete->bindParam(':roomId', $roomId, PDO::PARAM_INT);
+    if (!$delete->execute()) {
+        die("Could not leave room $roomId");
+    }
 }
 
 // Get the name, id, and description for a room.
@@ -121,8 +137,9 @@ function getRooms($userId) {
 function getMessages($roomId) {
 	global $pdo;
 	$select = $pdo->prepare("
-		SELECT * FROM Messages
-			WHERE room is :roomId;
+		SELECT m.timestamp, u.id as authorId, u.name as author, m.body FROM Messages m
+            LEFT JOIN Users u ON u.id = m.author
+			WHERE m.room is :roomId;
 	");
 	$select->bindParam(':roomId', $roomId, PDO::PARAM_INT);
 	if (!$select->execute()) {

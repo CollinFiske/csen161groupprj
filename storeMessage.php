@@ -37,7 +37,7 @@ if (!isset($_POST['roomId'])) {
 }
 $roomId = $_POST['roomId'];
 
-saveMessage($roomId, $authorId, $content);
+saveMessage($roomId, $authorId, $timestamp, $content);
 
 exit; // TODO
 
