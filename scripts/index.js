@@ -8,12 +8,15 @@
 import { getUserId } from './utils.js'
 
 // Setting up global variable
-const PEER_ID_SALT = 'a34w0pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
+const PEER_ID_SALT = 'kfljdfjkj34w0pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
 let currentRoomId = null;
 let currentUserId = null;
-let currentUserName = null;
 let peerConnections =  {}; // empty object for now of all peer connections at the moment. Gonna consist of key: peerId as well as value: DataConnection
 let currentRoomMembers = [] // { id, name } all of the members in a room
+
+const getName = () => {
+    return document.getElementById('currentName').value ?? ''
+}
 
 //Parsing the parameters of the URL to get both the roomId
 const urlParams = new URLSearchParams(window.location.search);
@@ -25,7 +28,6 @@ const us = new Peer(PEER_ID_SALT + currentUserId, { debug: 1 });
 us.on('error', (e) => {
 	console.error(e)
 })
-
 if (currentRoomId) {
 	joinRoom(currentRoomId);
 }
@@ -51,7 +53,7 @@ messageBox.addEventListener('input', () => {
 // Send Button event listener
 sendButton.addEventListener('click', sendMessage);
 messageBox.addEventListener('keydown', (e) => {
-	if (e.key === 'Enter' && e.shiftKey) {
+	if (e.key === 'Enter' && !e.shiftKey) {
 		e.preventDefault();
 		sendMessage();
 	}
@@ -77,6 +79,7 @@ async function getRooms() {
 	for (const room of rooms) {
 		const el = document.createElement('div')
 		el.classList.add('conversation')
+		el.setAttribute('data-room-id', room.id)
 		el.addEventListener('click', () => joinRoom(room.id))
 		el.innerHTML = `
 			<div class="title">${room.name}</div>
@@ -88,11 +91,11 @@ async function getRooms() {
 				</summary>
 				<div class="context-menu">
 					<div class="item danger">
-                        <a href="/leaveRoom.php?roomId=${room.id}">Leave</a>
+                        <a href="/leaveRoom.php?roomId=${room.id}" style="color: inherit; text-decoration: inherit;">Leave</a>
                     </div>
 				</div>
 			</details>
-			<div class="subtitle subtext">${room.description}</div>
+			<div class="subtitle subtext">${room.description || 'No description given.'}</div>
 		`
 		container.appendChild(el)
 	}
@@ -106,13 +109,13 @@ async function leaveRoom(roomId) {
 
 async function sendMessage () {
 	const content = messageBox.value.trim();
-	if (!content || !currentRoomId) {
+	if (!content) {
 		return;
 	}
 
 	const messageData = {
 		authorId: currentUserId,
-        author: currentUserName,
+        authorName: getName(),
 		timestamp: Date.now(),
 		content,
 		roomId: currentRoomId,
@@ -140,7 +143,7 @@ async function sendMessage () {
 	document
 		.getElementById("chat-container")
 		.appendChild(
-			createMessageElement(messageData.author, messageData.content, [])
+			createMessageElement(messageData.authorName, messageData.content, messageData.timestamp, [])
 		);
 
 	// Sets the message input box back to nothing again starting up a new input
@@ -153,17 +156,20 @@ async function sendMessage () {
 
 // The following functions are used to gather from the database via php files that deal with particular parts of the project
 
+
 // This function is used for when we join the room and is used to get setup the proper connections
 async function joinRoom(roomId) {
 	currentRoomId = roomId;
+
+    document.querySelectorAll('*[data-room-id]').forEach(e => e.classList.remove('active'))
+    document.querySelector(`*[data-room-id="${roomId}"]`)?.classList.add('active')
 
 	// For all existing messages already, we need to fetch them! This can be done by getting them from the database via results from getPeers.php
 	const res = await fetch(`/getRoomData.php?roomId=${roomId}`).then(r => r.json());
 
     currentRoomMembers = res.members
-    currentUserName = res.members.find(m => m.id == currentUserId).name
 
-	document.getElementById('room-name').innerText = `${res.room.name} (${res.room.id})`
+	document.getElementById('room-name').innerHTML = `${res.room.name} (Room ID: ${res.room.id})`
 
 	// Loop for all the existing peers and make sure that they match. If so, setup several connections per peer
 	for (const member of res.members) {
@@ -171,16 +177,19 @@ async function joinRoom(roomId) {
 		if (member.id === currentUserId) {
 			continue;
 		}
-		const conn = us.connect(PEER_ID_SALT + member.id, {
-			reliable: true
-		});
-		setupConnection(conn);
+        const pid = PEER_ID_SALT + member.id
+        console.log({ pid }, peerConnections)
+        if (!(pid in peerConnections)) {
+            console.log('connect to', pid)
+            const conn = us.connect(pid);
+            setupConnection(conn);
+        }
 	}
 
 	const chatContainer = document.getElementById('chat-container');
 	chatContainer.innerHTML = ''
 	for (const message of res.messages) {
-		chatContainer.appendChild(createMessageElement(message.author, message.body, message.timestamp, []))
+		chatContainer.appendChild(createMessageElement(message.authorName, message.body, message.timestamp, []))
 	}
 
         updateRoomStats()
@@ -189,9 +198,9 @@ async function joinRoom(roomId) {
 function createMessageElement(author, body, timestamp, files) {
 	const el = document.createElement('div')
     el.classList.add('message')
-    const time = new Date(timestamp).toString()
+    const time = new Date(parseInt(`${timestamp}`))
 	el.innerHTML = `
-		<details class="pmenu above">
+		<details class="pmenu above author">
 			<div class="author-details">
 				<h3>${author}</h3>
 				<!-- <p>email: <a href="mailto:bsmith@scu.edu">bsmith@scu.edu</a></p> -->
@@ -202,8 +211,8 @@ function createMessageElement(author, body, timestamp, files) {
 			</summary>
 		</details>
 		<div class="body"> ${body} </div>
-		<div class="timestamp"> ${time} </div>
-		<div class="files"></div>
+		<div class="timestamp"> ${time.getHours() % 11 + 1}:${time.getMinutes().toString().padStart(2, '0')} </div>
+		<!-- <div class="files"></div> -->
 	`
 	return el
 }
@@ -212,22 +221,49 @@ function createMessageElement(author, body, timestamp, files) {
 
 // A listener is created for preparation of receiving a message
 us.on('connection', (conn) => {
-	setupConnection(conn);
+    console.log(conn.peer, 'has connected to us')
+    conn.on('open', () => {
+        conn.send('oh hi')
+    })
+	// setupConnection(conn);
 });
+
+us.on('data', dat => {
+    console.log('we got', dat)
+})
+
+us.on('open', () => {
+    console.log(us.id)
+    const id = new URL(window.location.href).searchParams.get('id')
+    if (id) {
+        const conn = us.connect(id)
+        console.log('truing to connect to', id)
+        conn.on('open', () => {
+            console.log('sending', 'hi there', id)
+            conn.send('hi there');
+        })
+        conn.on('data', dat => {
+            console.log('....they sent', dat)
+        })
+    }
+})
 
 // Function is used to setup connections via the connection object that is defined by the peerId at a given point
 function setupConnection(conn) {
+    return;
 	conn.on('open', () => {
 		peerConnections[conn.peer] = conn;
-                updateRoomStats()
+        console.log('good morning', conn.peer)
+        updateRoomStats()
 	});
 
-        conn.on('close', () => {
-                delete peerConnections[conn.peer]
-                updateRoomStats()
-        })
+    conn.on('close', () => {
+        delete peerConnections[conn.peer]
+        updateRoomStats()
+    })
 
 	conn.on('data', (msg) => {
+        console.log('message from', conn.peer)
 		if (msg.type === 'message') {
 			document
 				.getElementById("chat-container")
@@ -250,7 +286,7 @@ async function updateRoomStats() {
         const onlineCount = Object.values(peerConnections).filter(c => c.open).length + 1; // include self of course
 
         const onlineTag = document.getElementById("online-now");
-        onlineTag.innerHTML = currentRoomMembers.length + " Members (" + onlineCount + " here now)"; 
+        onlineTag.innerHTML = currentRoomMembers.length + ` Member${currentRoomMembers.length == 1 ? '' : 's'} (` + onlineCount + " here now)"; 
 
         document.getElementById('member-list').innerHTML = currentRoomMembers
                 .map(m => `

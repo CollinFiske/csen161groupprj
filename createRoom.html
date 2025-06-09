@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Room</title>
-
+    <link rel="stylesheet" href="styles/base.css">
     <style>
         :root {
             --orange: #DFAD63;
@@ -41,6 +41,10 @@
             max-width: 400px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             position: relative;
+        }
+
+        .button {
+                background: var(--button-background);
         }
 
         .header {
@@ -159,21 +163,14 @@
 
         .button {
             width: 100%;
-            padding: 12px 16px;
-            background: var(--orange);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 24px;
+            margin-bottom: 16px;
+            text-decoration: inherit;
+            display: block;
+            text-align: center;
         }
-
-        .button:hover {
-            background: #cc9a56;
-            transform: translateY(-1px);
+        .button.colored {
+            background: var(--orange);
         }
 
         .button:disabled {
@@ -183,15 +180,13 @@
         }
     </style>
 
-    <link rel="stylesheet" href="styles/base.css">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 
 <body>
     <form class="welcome-container"  action="/storeRoom.php" method="POST">
         <div class="header">
-            <a href="welcome.html"><button class="back-btn">←</button></a>
-            <h1>Create a room</h1>
+            <h1>Create a Room</h1>
         </div>
         
         <div class="input-group">
@@ -202,15 +197,15 @@
             <textarea id="roomDescription" name="description" placeholder="Room description"></textarea>
         </div>
         
-        <div class="checkbox-group">
-            <label class="checkbox-wrapper">
-                <input type="checkbox" id="allowAnonymous" />
-                <span class="custom-checkbox"></span>
-            </label>
-            <label for="allowAnonymous" class="checkbox-label">Allow students to post anonymously</label>
-        </div>
+        <!-- <div class="checkbox-group"> -->
+        <!--     <label class="checkbox-wrapper"> -->
+        <!--         <input type="checkbox" id="allowAnonymous" /> -->
+        <!--         <span class="custom-checkbox"></span> -->
+        <!--     </label> -->
+        <!--     <label for="allowAnonymous" class="checkbox-label">Allow students to post anonymously</label> -->
+        <!-- </div> -->
         
-        <input type="submit" class="button" value="Submit" />
+        <input type="submit" class="button colored" value="Submit" />
     </div>
 
 </body>

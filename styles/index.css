@@ -3,13 +3,15 @@
 	inset: 0;
 	display: grid;
 	grid-template: 
-		"nav header"
-		"nav main"
-		"nav input" /
+		"nav header" auto
+		"nav main" 1fr
+		"nav input" auto /
 		256px 1fr;
 }
+
 .container header {
 	grid-area: header;
+    padding: 16px;
 }
 .container nav {
 	grid-area: nav;
@@ -17,6 +19,7 @@
 .container main {
 	grid-area: main;
 	overflow: auto;
+    padding: 16px;
 }
 .container .input {
 	grid-area: input;
@@ -32,21 +35,26 @@ nav section h3 {
 	justify-content: space-between;
 }
 
-.message {
-	padding: 4px 0;
+#chat-container .message {
+        display: grid;
+        grid-template: 
+                "author date"
+                "content content" /
+                1fr auto ;
+        padding: 4px 0;
 }
 .message .author {
-	font-weight: bold;
-	cursor: pointer;
+        font-weight: bold;
+        cursor: pointer;
 }
 .message .author:hover {
-	text-decoration: underline;
+        text-decoration: underline;
 }
 .message .author-details {
-	padding: 8px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
 }
 
 .file {
@@ -75,6 +83,7 @@ nav section h3 {
 		"subtitle   details"
 		/ 1fr auto;
 }
+.conversation:hover,
 .conversation.active {
 	background: var(--background-hover);
 }
@@ -96,6 +105,14 @@ nav section h3 {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+}
+.input .post-as .edit-name {
+  box-sizing: border-box;
+  padding: 6px;
+  min-height: calc(6px + 1em + 6px);
+  max-height: calc(6px + 1em + 6px);
+  min-width: calc(6px + 1em + 6px);
+  max-width: calc(6px + 1em + 6px);
 }
 
 .input .message {
@@ -125,7 +142,7 @@ header {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: center;
 	text-align: center;
 }
 
@@ -156,4 +173,18 @@ header {
 }
 #member-list .name {
     font-weight: bold;
+}
+
+#chat-container .message .author {
+        grid-area: author;
+}
+#chat-container .message .timestamp {
+        grid-area: date;
+        opacity: 0.5;
+        text-align: right;
+        font-size: 10px;
+}
+#chat-container .message .body {
+        font-size: 18px;
+        grid-area: content;
 }

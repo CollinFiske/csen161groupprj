@@ -27,6 +27,7 @@ $pdo->exec("
 		body VARCHAR(2048) NOT NULL,
 		room INTEGER NOT NULL,
         author INTEGER NOT NULL,
+        authorName VARCHAR(32) NOT NULL,
         timestamp INTEGER NOT NULL
 	);
 
@@ -57,17 +58,18 @@ function createRoom($name, $description) {
 
 // Saves the message in the database. No checks are made for if this is a
 // duplicate.
-function saveMessage($roomId, $authorId, $timestamp, $body) {
+function saveMessage($roomId, $authorId, $authorName, $timestamp, $body) {
 	global $pdo;
 	$insert = $pdo->prepare("
-		INSERT INTO Messages(room, author, timestamp, body) VALUES
-			(:roomId, :authorId, :timestamp, :body)
+		INSERT INTO Messages(room, author, authorName, timestamp, body) VALUES
+			(:roomId, :authorId, :authorName, :timestamp, :body)
 			RETURNING id;
 	");
 	$insert->bindParam(':roomId', $roomId, PDO::PARAM_INT);
 	$insert->bindParam(':authorId', $authorId, PDO::PARAM_INT);
 	$insert->bindParam(':timestamp', $timestamp, PDO::PARAM_INT);
 	$insert->bindParam(':body', $body, PDO::PARAM_STR);
+	$insert->bindParam(':authorName', $authorName, PDO::PARAM_STR);
 	if (!$insert->execute()) {
 		die("Could not insert message");
 	}
@@ -137,7 +139,7 @@ function getRooms($userId) {
 function getMessages($roomId) {
 	global $pdo;
 	$select = $pdo->prepare("
-		SELECT m.timestamp, u.id as authorId, u.name as author, m.body FROM Messages m
+		SELECT m.timestamp, u.id as authorId, m.authorName, u.name as author, m.body FROM Messages m
             LEFT JOIN Users u ON u.id = m.author
 			WHERE m.room is :roomId;
 	");

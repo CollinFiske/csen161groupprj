@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome</title>
+
+        <link rel="stylesheet" href="styles/base.css">
     <style>
         :root {
             --orange: #DFAD63;
@@ -60,10 +62,6 @@
             transition: background-color 0.2s;
         }
 
-        .close-btn:hover {
-            background: var(--button-hover);
-        }
-
         h1 {
             font-size: 24px;
             margin-bottom: 32px;
@@ -97,32 +95,20 @@
 
         .button {
             width: 100%;
-            padding: 12px 16px;
-            background: var(--orange);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             margin-bottom: 16px;
+            text-decoration: inherit;
+            display: block;
+            text-align: center;
         }
-
-        .button:hover {
-            background: #cc9a56;
-            transform: translateY(-1px);
+        .button.colored {
+            background: var(--orange);
         }
 
         .button.secondary {
             background: transparent;
             border: 1px solid var(--outline);
             color: var(--text);
-        }
-
-        .button.secondary:hover {
-            background: var(--button-hover);
-            transform: translateY(-1px);
         }
 
         .divider {
@@ -153,16 +139,15 @@
 <body>
     <form class="welcome-container" action="/joinRoom.php" method="POST">
         
-        <h1>Welcome Screen</h1>
+        <h1>AcademiChat</h1>
         
         <div class="input-group">
-            <input type="text" id="roomCode" name="roomId" placeholder="Enter a room code" />
+            <input type="text" id="roomCode" required name="roomId" placeholder="Enter a room code" />
         </div>
         
-        <button class="button" id="joinBtn">Join</button>
+        <button class="button colored" id="joinBtn">Join</button>
         
         <div class="divider">&nbsp</div>
-        
 		<a href="createRoom.html" class="button">Create a room</a>
     </form>
 

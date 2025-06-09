@@ -24,6 +24,7 @@ $description = $_POST['description'] ?? '';
 /* $createdAt = $data['createdAt'] ?? time(); */
 
 $roomId = createRoom($name, $description);
+/* var_dump($roomId); */
 joinRoom($userId, $roomId, true);
 
 header('Location: index.html');

@@ -37,7 +37,14 @@ if (!isset($_POST['roomId'])) {
 }
 $roomId = $_POST['roomId'];
 
-saveMessage($roomId, $authorId, $timestamp, $content);
+if (!isset($_POST['authorName'])) {
+    http_response_code(400); 
+    echo 'Missing authorName';
+    exit;
+}
+$authorName = $_POST['authorName'];
+
+saveMessage($roomId, $authorId, $authorName, $timestamp, $content);
 
 exit; // TODO
 

@@ -14,259 +14,57 @@
 				<section>
 					<h3>
 						Rooms
-						<details class="float">
-							<summary class="button round" id="f">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-									<path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-								</svg>
-							</summary>
-							<div>
-		<form action="/joinRoom.php" method="POST">
-			<h1>Join a room</h1>
-			
-			<div class="input-group">
-				<input type="text" id="roomCode" name="roomId" placeholder="Enter a room code" />
-			</div>
-			
-			<button class="button" id="joinBtn">Join</button>
-		</form>
-
-		<form action="/storeRoom.php" method="POST">
-			<div class="header">
-				<a href="welcome.html"><button class="back-btn">←</button></a>
-				<h1>Create a room</h1>
-			</div>
-
-			<div class="input-group">
-				<input type="text" id="roomName" name="name" placeholder="Room name" required />
-			</div>
-
-			<div class="input-group">
-				<textarea id="roomDescription" name="description" placeholder="Room description"></textarea>
-			</div>
-
-			<div class="checkbox-group">
-				<label class="checkbox-wrapper">
-					<input type="checkbox" id="allowAnonymous" />
-					<span class="custom-checkbox"></span>
-				</label>
-				<label for="allowAnonymous" class="checkbox-label">Allow students to post anonymously</label>
-			</div>
-
-			<input type="submit" class="button" value="Submit" />
-		</form>
-							</div>
-						</details>
+                        <a class="button round" href="welcome.html" style="color: inherit; text-decoration: inherit;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
+                                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                            </svg>
+                        </a>
 					</h3>
 
 					<div id="conversations"></div>
 				</section>
 
-				<section>
-					<h3>direct</h3>
-				</section>
+				<!-- <section> -->
+				<!-- 	<h3>direct</h3> -->
+				<!-- </section> -->
 			</nav>
 
 			<header>
 				<div></div>
 				<div>
-					<p id="room-name">CSEN 161</p>
+					<h2 id="room-name"></h2>
 					<details class="pmenu">
 						<summary>
-							<span id="online-now" class="link subtext">32 Members (12 here now)</span>
+							<span id="online-now" class="link subtext"></span>
 						</summary>
 						<div id="member-list">
 						</div>
 					</details>
 				</div>
-				<div class="button">Host Options</div>
+				<!-- <div class="button">Host Options</div> -->
 			</header>
 
 			<main>
-				<div id="chat-container" class="constrain">
-					<div class="message">
-						<details class="pmenu above">
-							<div class="author-details">
-								<h3>John Smith</h3>
-								<p>email: <a href="mailto:bsmith@scu.edu">bsmith@scu.edu</a></p>
-								<p><span class="link colored">Send direct message</span></p>
-							</div>
-							<summary>
-								<span class="author subtext"> John Smith</span>
-							</summary>
-						</details>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-<div class="message">
-						<details class="pmenu">
-							<summary>
-								<span class="author subtext"> John Smith</span>
-							</summary>
-							<div class="author-details">
-								<h3>John Smith</h3>
-								<p>email: <a href="mailto:bsmith@scu.edu">bsmith@scu.edu</a></p>
-								<p><span class="link colored">Send direct message</span></p>
-							</div>
-						</details>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-					<div class="message">
-						<details class="pmenu">
-							<div class="author-details">
-								<h3>John Smith</h3>
-								<p>email: <a href="mailto:bsmith@scu.edu">bsmith@scu.edu</a></p>
-								<p><span class="link colored">Send direct message</span></p>
-							</div>
-							<summary>
-								<span class="author subtext"> John Smith</span>
-							</summary>
-						</details>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-					<p class="author subtext"> John Smith </p>
-					<div class="body">
-						<p> hello </p>
-						<p> hello </p>
-					</div>
-					<div class="files"></div>
-				</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files"></div>
-					</div>
-
-					<div class="message">
-						<p class="author subtext"> John Smith </p>
-						<div class="body">
-							<p> hello </p>
-							<p> hello </p>
-						</div>
-						<div class="files">
-							<div class="file">
-								<span class="label"> index.html </span>
-								<button class="button round">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-										<path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
-										<path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-									</svg>
-								</button>
-							</div>
-						</div>
-					</div>
-
-				</div>
+				<div id="chat-container" class="constrain"></div>
 			</main>
 
-			<div class="input constrain">
-				<div class="message">
-					<div class="post-as subtext">
-						Posting as: 
-						<input id="real-name" name="post-as" type="radio" />
-						<label for="real-name"> Bob Smith </label>
-						<input id="anon-name" name="post-as" type="radio" />
-						<label for="anon-name">
-							Anonymous Hippo
-							<button class="button round">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-									<path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
-								</svg>
-							</button>
-						</label>
+        <div class="input constrain">
+          <div class="message">
+            <div class="post-as subtext">
+              Posting as: <input type="text" placeholder="currentName" id="currentName" value="Anonymous" />
 					</div>
 
 					<label class="body">
 						<textarea id="message-box"></textarea>
 						<div class="files">
-							<div class="file"> 
-								<span class="label"> style.css (10 KiB) </span>
-								<button class="button round">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-										<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-									</svg>
-								</button>
-							</div>
+							<!-- <div class="file">  -->
+							<!-- 	<span class="label"> style.css (10 KiB) </span> -->
+							<!-- 	<button class="button round"> -->
+							<!-- 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon"> -->
+							<!-- 			<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /> -->
+							<!-- 		</svg> -->
+							<!-- 	</button> -->
+							<!-- </div> -->
 						</div>
 					</label>
 				</div>
