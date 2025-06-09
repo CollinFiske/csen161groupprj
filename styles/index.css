@@ -132,3 +132,28 @@ header {
 #message-box {
 	resize: none;
 }
+
+#member-list .member {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+}
+#member-list .dot {
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 10px;
+    max-height: 10px;
+    background: var(--outline);
+    border-radius: 999px;
+}
+#member-list .member.self {
+    color: var(--blue);
+}
+#member-list .member.active .dot {
+    background: var(--green);
+}
+#member-list .name {
+    font-weight: bold;
+}

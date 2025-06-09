@@ -12,6 +12,7 @@ const PEER_ID_SALT = 'a34w0pl8akw6vcv2n_' // by default, everyone using PeerJS u
 let currentRoomId = null;
 let currentUserId = null;
 let peerConnections =  {}; // empty object for now of all peer connections at the moment. Gonna consist of key: peerId as well as value: DataConnection
+let currentRoomMembers = [] // { id, name } all of the members in a room
 
 //Parsing the parameters of the URL to get both the roomId
 const urlParams = new URLSearchParams(window.location.search);
@@ -153,6 +154,8 @@ async function joinRoom(roomId) {
 	// For all existing messages already, we need to fetch them! This can be done by getting them from the database via results from getPeers.php
 	const res = await fetch(`/getRoomData.php?roomId=${roomId}`).then(r => r.json());
 
+        currentRoomMembers = res.members
+
 	document.getElementById('room-name').innerText = `${res.room.name} (${res.room.id})`
 
 	// Loop for all the existing peers and make sure that they match. If so, setup several connections per peer
@@ -172,6 +175,8 @@ async function joinRoom(roomId) {
 	for (const message of res.messages) {
 		chatContainer.appendChild(createMessageElement(message.author, message.body, []))
 	}
+
+        updateRoomStats()
 }
 
 function createMessageElement(author, body, files) {
@@ -204,7 +209,13 @@ us.on('connection', (conn) => {
 function setupConnection(conn) {
 	conn.on('open', () => {
 		peerConnections[conn.peer] = conn;
+                updateRoomStats()
 	});
+
+        conn.on('close', () => {
+                delete peerConnections[conn.peer]
+                updateRoomStats()
+        })
 
 	conn.on('data', (msg) => {
 		if (msg.type === 'message') {
@@ -226,20 +237,25 @@ async function refreshMessages() {
 
 // Periodically update member and online counts when nessecary
 async function updateRoomStats() {
-  try {
-    const res = await fetch(`/getPeers.php?roomId=${currentRoomId}`);
-    const peerIds = await res.json();
+        const onlineCount = Object.values(peerConnections).filter(c => c.open).length + 1; // include self of course
 
-	const allMembers = peerIds.length; // Just counting the number of peer ids that was returned by getPeers again
-    const onlineCount = Object.keys(peerConnections).length + 1; // include self of course
+        const onlineTag = document.getElementById("online-now");
+        onlineTag.innerHTML = currentRoomMembers.length + " Members (" + onlineCount + " here now)"; 
 
-	const onlineTag = document.getElementById("online-now");
-	onlineTag.innerHTML = allMembers.length + " Members (" + onlineCount + " here now)"; 
-
-  } catch (err) {
-    console.error("Failed to update room stats", err);
-  }
+        document.getElementById('member-list').innerHTML = currentRoomMembers
+                .map(m => `
+                        <div
+                                class="
+                                        member
+                                        ${(peerConnections[PEER_ID_SALT + m.id]?.open || m.id == currentUserId) ? 'active' : ''}
+                                        ${m.id == currentUserId ? 'self' : ''}
+                                "
+                        >
+                                <div class="dot "></div>
+                                <span class="name">${m.name}</span>
+                                ${m.admin ? `<span class="badge">Host</span>` : ''}
+                        </div>
+                `)
+                .join('')
 }
 
-setInterval(updateRoomStats, 10000);
-updateRoomStats();
