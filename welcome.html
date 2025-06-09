@@ -148,25 +148,23 @@
             font-size: 14px;
         }
     </style>
-
-    <script src="scripts/welcome.js" defer></script>
 </head>
 
 <body>
-    <div class="welcome-container">
+    <form class="welcome-container" action="/joinRoom.php" method="POST">
         
         <h1>Welcome Screen</h1>
         
         <div class="input-group">
-            <input type="text" id="roomCode" placeholder="Enter a room code" />
+            <input type="text" id="roomCode" name="roomId" placeholder="Enter a room code" />
         </div>
         
-        <button class="button">Join</button>
+        <button class="button" id="joinBtn">Join</button>
         
         <div class="divider">&nbsp</div>
         
-        <button class="button secondary">Create a room</button>
-    </div>
+		<a href="createRoom.html" class="button">Create a room</a>
+    </form>
 
 </body>
 

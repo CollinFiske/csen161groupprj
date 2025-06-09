@@ -1,17 +1,21 @@
 <?php
+include 'db.php';
 
 // This php script is responsible for actually sending a room to javascript from the database
 
 header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$roomId = $data['roomId'] ?? '';
-
-if (!$roomId) {
-	echo json_encode([]);
-	exit;
+if (!isset($_GET['roomId'])) {
+	http_response_code(400);
+	exit("Missing room id");
 }
+$roomId = $_GET['roomId'];
 
-// Rest of code below should be used to make a query to get the room and send a json encoded back to javascript
+$result = [];
+$result['room'] = getRoom($roomId);
+$result['messages'] = getMessages($roomId);
+$result['members'] = getMembers($roomId);
 
+header('Content-Type: application/json');
+echo json_encode($result);
 ?>

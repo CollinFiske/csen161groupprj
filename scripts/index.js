@@ -5,16 +5,28 @@
  * @import { Peer } from 'peerjs'
  */
 
+import { getUserId } from './utils.js'
+
 // Setting up global variable
-const us = new Peer();
+const PEER_ID_SALT = 'a34w0pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
 let currentRoomId = null;
 let currentUserId = null;
 let peerConnections =  {}; // empty object for now of all peer connections at the moment. Gonna consist of key: peerId as well as value: DataConnection
 
-//Parsing the parameters of the URL to get both the roomId and userId
+//Parsing the parameters of the URL to get both the roomId
 const urlParams = new URLSearchParams(window.location.search);
 currentRoomId = urlParams.get("roomId");
-currentUserId = urlParams.get("userId");
+currentUserId = getUserId();
+
+const us = new Peer(PEER_ID_SALT + currentUserId, { debug: 1 });
+
+us.on('error', (e) => {
+	console.error(e)
+})
+
+if (currentRoomId) {
+	joinRoom(currentRoomId);
+}
 
 // https://stackoverflow.com/a/25621277
 const messageBox = document.getElementById('message-box')
@@ -28,7 +40,7 @@ messageBox.addEventListener('input', () => {
 // Setup object to take the place of format of the buttons needed and setting the file attached to null for now
 const sendButton = document.getElementById('send-btn');
 const attachButton = document.getElementById('attachment-btn');
-let attachmentFile = null;
+let attachedFile = null;
 
 messageBox.addEventListener('input', () => {
 	sendButton.disabled = !messageBox.value.trim();
@@ -55,32 +67,60 @@ attachButton.addEventListener("click", () => {
   input.click();
 });
 
+getRooms()
+async function getRooms() {
+	const rooms = await fetch('/getRooms.php').then(r => r.json())
+	const container = document.getElementById('conversations')
+	container.innerHTML = ''
+	for (const room of rooms) {
+		const el = document.createElement('div')
+		el.classList.add('conversation')
+		el.addEventListener('click', () => joinRoom(room.id))
+		el.innerHTML = `
+			<div class="title">${room.name}</div>
+			<details class="pmenu details">
+				<summary class="button round">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
+						<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+					</svg>
+				</summary>
+				<div class="context-menu">
+					<div class="item">item 1</div>
+					<div class="item">item 2</div>
+					<div class="item danger">item 1</div>
+				</div>
+			</details>
+			<div class="subtitle subtext">${room.description}</div>
+		`
+		container.appendChild(el)
+	}
+}
+
 // Next we focus on sending a message for when it is written
 
-function sendMessage () {
+async function sendMessage () {
 	const content = messageBox.value.trim();
-	if (!content) {
+	if (!content || !currentRoomId) {
 		return;
 	}
 
-	// Gonna setup with form data as there is more to deal with here
-	const formData = FormData();
-	formData.append("senderId", currentUserId);
-	formData.append("timestamp", Date.now());
-	formData.append("content", content);
-	formData.append("roomId", currentRoomId);
-
-	if (attachmentFile) {
-		formData.append("attachment", attachmentFile);
-	}
-
 	const messageData = {
-		senderId: us.id,
+		authorId: currentUserId,
 		timestamp: Date.now(),
 		content,
 		roomId: currentRoomId,
 		hasAttachment: !!attachedFile
 	};
+
+	// Gonna setup with form data as there is more to deal with here
+	const formData = new FormData();
+	for (const [k, v] of Object.entries(messageData)) {
+		formData.append(k, v)
+	}
+
+	// if (attachmentFile) {
+	// 	formData.append("attachment", attachmentFile);
+	// }
 
 	// Sends to all the peers using the following
 	for (const conn of Object.values(peerConnections)) {
@@ -88,15 +128,19 @@ function sendMessage () {
 	}
 
 	// Sending to the backend for the storage into the database for later use
-	fetch("/storeMessage.php", {
-	  method: "POST",
-	  body: formData
-	});
+	await fetch("/storeMessage.php", { method: "POST", body: formData });
 
-	// Sets the message input box back to nothing again starting up a new input event to finish resetting
+	document
+		.getElementById("chat-container")
+		.appendChild(
+			createMessageElement(messageData.authorId, messageData.content, [])
+		);
+
+	// Sets the message input box back to nothing again starting up a new input
+	// event to finish resetting
 	messageBox.value = '';
-	attachedFile = null;
-  	fileInput.value = "";
+	// attachmentFile = null;
+  	// fileInput.value = "";
 	messageBox.dispatchEvent(new Event('input'));
 }
 
@@ -107,22 +151,46 @@ async function joinRoom(roomId) {
 	currentRoomId = roomId;
 
 	// For all existing messages already, we need to fetch them! This can be done by getting them from the database via results from getPeers.php
-	const res = await fetch(`/getPeers.php?roomId=${roomId}`);
-	const peerIds = await res.json();
+	const res = await fetch(`/getRoomData.php?roomId=${roomId}`).then(r => r.json());
+
+	document.getElementById('room-name').innerText = `${res.room.name} (${res.room.id})`
 
 	// Loop for all the existing peers and make sure that they match. If so, setup several connections per peer
-	for (const peerId of peerIds) {
-		if (peerId === us.id) {
+	for (const member of res.members) {
+		console.log(member.id, currentUserId, Object.keys(peerConnections))
+		if (member.id === currentUserId) {
 			continue;
 		}
-		const conn = us.connect(peerId);
+		const conn = us.connect(PEER_ID_SALT + member.id, {
+			reliable: true
+		});
 		setupConnection(conn);
+	}
+
+	const chatContainer = document.getElementById('chat-container');
+	chatContainer.innerHTML = ''
+	for (const message of res.messages) {
+		chatContainer.appendChild(createMessageElement(message.author, message.body, []))
 	}
 }
 
-// Wrote a small if statment here to run whenever a room is loaded to automatically join the room if the proper ids exist:
-if (currentRoomId && currentUserId) {
-	joinRoom(currentRoomId);
+function createMessageElement(author, body, files) {
+	const el = document.createElement('div')
+	el.innerHTML = `
+		<details class="pmenu above">
+			<div class="author-details">
+				<h3>${author}</h3>
+				<!-- <p>email: <a href="mailto:bsmith@scu.edu">bsmith@scu.edu</a></p> -->
+				<p><span class="link colored">Send direct message</span></p>
+			</div>
+			<summary>
+				<span class="author subtext">${author}</span>
+			</summary>
+		</details>
+		<div class="body"> ${body} </div>
+		<div class="files"></div>
+	`
+	return el
 }
 
 // The following is used to setup the listeners for the incoming connections and to handle it when it occurs
@@ -140,7 +208,11 @@ function setupConnection(conn) {
 
 	conn.on('data', (msg) => {
 		if (msg.type === 'message') {
-			location.reload(); 
+			document
+				.getElementById("chat-container")
+				.appendChild(
+					createMessageElement(msg.data.authorId, msg.data.content, [])
+				);
 		}
 	});
 }

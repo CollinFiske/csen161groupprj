@@ -183,22 +183,23 @@
         }
     </style>
 
-    <script src="scripts/createRoom.js" defer></script>
+    <link rel="stylesheet" href="styles/base.css">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 
 <body>
-    <div class="welcome-container">
+    <form class="welcome-container"  action="/storeRoom.php" method="POST">
         <div class="header">
             <a href="welcome.html"><button class="back-btn">←</button></a>
             <h1>Create a room</h1>
         </div>
         
         <div class="input-group">
-            <input type="text" id="roomName" placeholder="Room name" required />
+            <input type="text" id="roomName" name="name" placeholder="Room name" required />
         </div>
         
         <div class="input-group">
-            <textarea id="roomDescription" placeholder="Room description"></textarea>
+            <textarea id="roomDescription" name="description" placeholder="Room description"></textarea>
         </div>
         
         <div class="checkbox-group">
@@ -209,7 +210,7 @@
             <label for="allowAnonymous" class="checkbox-label">Allow students to post anonymously</label>
         </div>
         
-        <button class="button" id="createBtn">Create</button>
+        <input type="submit" class="button" value="Submit" />
     </div>
 
 </body>

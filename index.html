@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="styles/base.css">
 		<link rel="stylesheet" href="styles/index.css">
-		<script src="scripts/index.js" defer></script>
+		<script src="scripts/index.js" type="module"></script>
 		<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 	</head>
 	<body>
@@ -21,57 +21,45 @@
 								</svg>
 							</summary>
 							<div>
-								<input type="text" placeholder="Enter a room code" /> <br />
-								<button class="button colored">Join</button> <br />
-								<details class="float">
-									<summary class="button"> Create a room </summary>
-									<div>
-										<input type="text" placeholder="Name" /> <br />
-										<input type="text" placeholder="Description" />
-									</div>
-								</details>
+		<form action="/joinRoom.php" method="POST">
+			<h1>Join a room</h1>
+			
+			<div class="input-group">
+				<input type="text" id="roomCode" name="roomId" placeholder="Enter a room code" />
+			</div>
+			
+			<button class="button" id="joinBtn">Join</button>
+		</form>
+
+		<form action="/storeRoom.php" method="POST">
+			<div class="header">
+				<a href="welcome.html"><button class="back-btn">←</button></a>
+				<h1>Create a room</h1>
+			</div>
+
+			<div class="input-group">
+				<input type="text" id="roomName" name="name" placeholder="Room name" required />
+			</div>
+
+			<div class="input-group">
+				<textarea id="roomDescription" name="description" placeholder="Room description"></textarea>
+			</div>
+
+			<div class="checkbox-group">
+				<label class="checkbox-wrapper">
+					<input type="checkbox" id="allowAnonymous" />
+					<span class="custom-checkbox"></span>
+				</label>
+				<label for="allowAnonymous" class="checkbox-label">Allow students to post anonymously</label>
+			</div>
+
+			<input type="submit" class="button" value="Submit" />
+		</form>
 							</div>
 						</details>
 					</h3>
 
-					<div class="conversation active">
-						<div class="title">CSEN 161</div>
-
-						<details class="pmenu details">
-							<summary class="button round">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-									<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
-								</svg>
-							</summary>
-							<div class="context-menu">
-								<div class="item">item 1</div>
-								<div class="item">item 2</div>
-								<div class="item danger">item 1</div>
-							</div>
-						</details>
-
-						<div class="subtitle subtext">this is the subtitle</div>
-					</div>
-
-					<div class="conversation">
-						<div class="title">CSEN 161L</div>
-
-						<details class="pmenu details">
-							<summary class="button round">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="icon">
-									<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
-								</svg>
-							</summary>
-							<div class="context-menu">
-								<div class="item">item 1</div>
-								<div class="item">item 2</div>
-								<div class="item danger">item 1</div>
-							</div>
-						</details>
-
-						<div class="subtitle subtext">this is the subtitle</div>
-					</div>
-
+					<div id="conversations"></div>
 				</section>
 
 				<section>
@@ -82,7 +70,7 @@
 			<header>
 				<div></div>
 				<div>
-					<p>CSEN 161</p>
+					<p id="room-name">CSEN 161</p>
 					<details class="pmenu">
 						<summary>
 							<span id="online-now" class="link subtext">32 Members (12 here now)</span>

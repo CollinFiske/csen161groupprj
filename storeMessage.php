@@ -1,4 +1,5 @@
 <?php
+include 'db.php';
 
 // This php script is similar again to the other storing ones where we gather the information from index.js and store messages into the database
 
@@ -9,17 +10,38 @@ if (!file_exists($uploadDir)) {
 }
 
 // Validate required fields if none of these fields were set
-if (!isset(!$data['senderId']), $_POST['timestamp'], $_POST['content'], $_POST['roomId']) || !isset($data['content']) || !isset($data['roomId'])) {
+if (!isset($_COOKIE['userId'])) {
     http_response_code(400); 
-    echo 'Missing required message fields';
+    exit('Missing userId cookie');
+}
+$authorId = $_COOKIE['userId'];
+
+if (!isset($_POST['timestamp'])) {
+    http_response_code(400); 
+    echo 'Missing timestamp';
     exit;
 }
+$timestamp = $_POST['timestamp'];
+
+if (!isset($_POST['content'])) {
+    http_response_code(400); 
+    echo 'Missing content';
+    exit;
+}
+$content = $_POST['content'];
+
+if (!isset($_POST['roomId'])) {
+    http_response_code(400); 
+    echo 'Missing roomId';
+    exit;
+}
+$roomId = $_POST['roomId'];
+
+saveMessage($roomId, $authorId, $content);
+
+exit; // TODO
 
 // Info given from the javascript to use
-$senderId = $_POST['senderId'];
-$timestamp = (int)$_POST['timestamp'];
-$content = trim($_POST['content']);
-$roomId = $_POST['roomId'];
 $attachmentPath = null;
 
 // Attempted here to handle what would happen if the file was uploaded:

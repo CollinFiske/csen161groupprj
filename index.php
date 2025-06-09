@@ -1,23 +1,16 @@
 <?php
+include 'db.php';
 
-session_start();
-
-// Check if user is already in a room
-if (isset($_SESSION['room_code']) && isset($_SESSION['display_name'])) {
-    // User has joined a room, redirect to chat
-    header('Location: index.html');
-    exit();
+if (isset($_COOKIE['userId'])) {
+	header('Location: index.html');
 }
 
-// Check if user has a room code but hasn't entered display name
-if (isset($_SESSION['room_code']) && !isset($_SESSION['display_name'])) {
-    // Redirect to join room screen
-    header('Location: joinRoom.html');
-    exit();
-}
+// No userId set. Get them an ID, and then have them go to the welcome screen to
+// pick a name.
 
-// No room code set, redirect to welcome screen
+
+setcookie('userId', createUser());
+
 header('Location: welcome.html');
 exit();
-
 ?>
