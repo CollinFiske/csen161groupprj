@@ -17,12 +17,13 @@ if (!isset($_POST['name'])) {
 }
 $name = $_POST['name'];
 
-// The following should setup the variables from the javascript
-$roomId = createRoom($name, $description);
 $description = $_POST['description'] ?? '';
+
+// The following should setup the variables from the javascript
 /* $allowAnonymous = $data['allowAnonymous'] ? 1 : 0; */
 /* $createdAt = $data['createdAt'] ?? time(); */
 
+$roomId = createRoom($name, $description);
 joinRoom($userId, $roomId, true);
 
 header('Location: index.html');
