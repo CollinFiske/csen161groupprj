@@ -8,7 +8,7 @@
 import { getUserId } from './utils.js'
 
 // Setting up global variable
-const PEER_ID_SALT = 'kfljdfjkj34w0pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
+const PEER_ID_SALT = 'kfljdfjkj30pl8akw6vcv2n_' // by default, everyone using PeerJS uses the same ICE server, so this helps us avoid naming conflicts
 let currentRoomId = null;
 let currentUserId = null;
 let peerConnections =  {}; // empty object for now of all peer connections at the moment. Gonna consist of key: peerId as well as value: DataConnection
@@ -173,14 +173,11 @@ async function joinRoom(roomId) {
 
 	// Loop for all the existing peers and make sure that they match. If so, setup several connections per peer
 	for (const member of res.members) {
-		console.log(member.id, currentUserId, Object.keys(peerConnections))
 		if (member.id === currentUserId) {
 			continue;
 		}
         const pid = PEER_ID_SALT + member.id
-        console.log({ pid }, peerConnections)
         if (!(pid in peerConnections)) {
-            console.log('connect to', pid)
             const conn = us.connect(pid);
             setupConnection(conn);
         }
@@ -221,39 +218,13 @@ function createMessageElement(author, body, timestamp, files) {
 
 // A listener is created for preparation of receiving a message
 us.on('connection', (conn) => {
-    console.log(conn.peer, 'has connected to us')
-    conn.on('open', () => {
-        conn.send('oh hi')
-    })
-	// setupConnection(conn);
+	setupConnection(conn);
 });
-
-us.on('data', dat => {
-    console.log('we got', dat)
-})
-
-us.on('open', () => {
-    console.log(us.id)
-    const id = new URL(window.location.href).searchParams.get('id')
-    if (id) {
-        const conn = us.connect(id)
-        console.log('truing to connect to', id)
-        conn.on('open', () => {
-            console.log('sending', 'hi there', id)
-            conn.send('hi there');
-        })
-        conn.on('data', dat => {
-            console.log('....they sent', dat)
-        })
-    }
-})
 
 // Function is used to setup connections via the connection object that is defined by the peerId at a given point
 function setupConnection(conn) {
-    return;
 	conn.on('open', () => {
 		peerConnections[conn.peer] = conn;
-        console.log('good morning', conn.peer)
         updateRoomStats()
 	});
 
@@ -263,12 +234,11 @@ function setupConnection(conn) {
     })
 
 	conn.on('data', (msg) => {
-        console.log('message from', conn.peer)
 		if (msg.type === 'message') {
 			document
 				.getElementById("chat-container")
 				.appendChild(
-					createMessageElement(msg.data.author, msg.data.content, msg.data.timestamp, [])
+					createMessageElement(msg.data.authorName, msg.data.content, msg.data.timestamp, [])
 				);
 		}
 	});
